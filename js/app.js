@@ -1,3 +1,4 @@
+const startOverlay = document.getElementById('overlay');
 const qwerty = document.getElementById('qwerty');
 const phrase = document.getElementById('phrase');
 const phraseUl = document.querySelector('#phrase ul');
@@ -44,7 +45,6 @@ function addPhraseToDisplay() {
 
 function checkLetter(buttonKey) {
     let eachLi = document.querySelectorAll('#phrase li');
-    // let getPhraseLower = getPhrase.toLowerCase();
 
     let match = '';
 
@@ -56,18 +56,33 @@ function checkLetter(buttonKey) {
             match += buttonKey;
         }
     }
-
-    // if (!getPhraseLower.includes(buttonKey)) {
-    //     match += 'false';
-    // } 
-
     return match;
+}
+
+function checkWin() {
+    let letter = document.querySelectorAll('li.letter');
+    let show = document.querySelectorAll('li.show');
+    let startOverlayTitle = document.querySelector('.title');
+    if (letter.length === show.length) {
+        startOverlay.classList.add('win');
+        startOverlayTitle.textContent = 'You Win!';
+        startBtn.textContent = 'Restart Game';
+        startOverlay.style.display = 'flex';
+    } else if (missed > 4) {
+        startOverlay.classList.add('lose');
+        startOverlayTitle.textContent = 'You Lost!';
+        startBtn.textContent = 'Restart Game';
+        startOverlay.style.display = 'flex';
+    }
 }
 
 // Button to start the game.
 startBtn.addEventListener('click', () => {
-    const startOverlay = document.getElementById('overlay');
     startOverlay.style.display = 'none';
+    let startOverlayClass = startOverlay.className;
+    if (startOverlayClass.includes('win') || startOverlayClass.includes('lose')) {
+        location.reload();
+    }
     addPhraseToDisplay();
 });
 
@@ -81,12 +96,17 @@ qwerty.addEventListener('click', (e) => {
     if (keyTag === 'BUTTON' && keyClass !== 'chosen'){
         key.className = 'chosen';
         let checkFunc = checkLetter(keyLetter);
-        let scoreboardHearts = scoreboard.lastElementChild;
+        let scoreboardHearts = scoreboard.firstElementChild;
 
-        // if (checkFunc === 'false') {
         if (checkFunc === '') {
             missed++;
             scoreboardHearts.remove();
+            let lostHeart = document.createElement('li')
+            let lostHeartImg = `<img src="images/lostHeart.png" height="35px" width="30px">`;
+            lostHeart.className = 'tries';
+            lostHeart.innerHTML = lostHeartImg;
+            scoreboard.appendChild(lostHeart);
         }
     }
+    checkWin();
 });
