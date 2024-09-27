@@ -1,12 +1,9 @@
 const startOverlay = document.getElementById('overlay');
-const qwerty = document.getElementById('qwerty');
-const phrase = document.getElementById('phrase');
 const phraseUl = document.querySelector('#phrase ul');
-let scoreboard = document.querySelector('#scoreboard ol');
+const qwerty = document.getElementById('qwerty');
+const scoreboard = document.querySelector('#scoreboard ol');
 
 const startBtn = document.querySelector('.btn__reset');
-
-let missed = 0;
 
 const phrases = [
     'BREAK A LEG',
@@ -16,7 +13,7 @@ const phrases = [
     'PENNY FOR YOUR THOUGHTS'
 ]
 
-let getPhrase = '';
+let missed = 0;
 
 // Return random phrase from phrases array.
 function getRandomPhraseAsArray() {
@@ -24,14 +21,13 @@ function getRandomPhraseAsArray() {
     return randomPhrase;
 }
 
-//Return a random phrase and add to HTML.
+// Return a random phrase and add to HTML.
 function addPhraseToDisplay() {
-    getPhrase += getRandomPhraseAsArray();
+    let getPhrase = getRandomPhraseAsArray();
     let splitPhrase = getPhrase.split('');
-    const phraseUl = document.querySelector('#phrase ul');
     for (let i = 0; i < splitPhrase.length; i++) {
-        let eachLetter = splitPhrase[i];
         let createLi = document.createElement('li');
+        let eachLetter = splitPhrase[i];
         createLi.textContent = eachLetter;
         phraseUl.appendChild(createLi);
         if (splitPhrase[i].trim() === '') {
@@ -43,22 +39,22 @@ function addPhraseToDisplay() {
     return phraseUl;
 }
 
+// Check for letter-phrase match based on button key clicked.
 function checkLetter(buttonKey) {
-    let eachLi = document.querySelectorAll('#phrase li');
-
+    let allLi = document.querySelectorAll('#phrase li');
     let match = '';
-
-    for (let i = 0; i < eachLi.length; i++) {
-        let eachLiLetter = eachLi[i].textContent.toLowerCase();
-
-        if (eachLiLetter.includes(buttonKey)) {
-            eachLi[i].classList.add('show');
+    for (let i = 0; i < allLi.length; i++) {
+        let eachLi = allLi[i].textContent.toLowerCase();
+        if (eachLi.includes(buttonKey)) {
+            allLi[i].classList.add('show');
+            allLi[i].style.transition = "all 1s";
             match += buttonKey;
         }
     }
     return match;
 }
 
+// Track game results - win or lose.
 function checkWin() {
     let letter = document.querySelectorAll('li.letter');
     let show = document.querySelectorAll('li.show');
@@ -89,18 +85,13 @@ startBtn.addEventListener('click', () => {
 // On screen keyboard listener.
 qwerty.addEventListener('click', (e) => {
     let key = e.target;
-    let keyTag = key.tagName;
     let keyLetter = key.textContent;
-    let keyClass = key.className;
-
-    if (keyTag === 'BUTTON' && keyClass !== 'chosen'){
+    if (key.tagName === 'BUTTON' && key.className !== 'chosen'){
         key.className = 'chosen';
-        let checkFunc = checkLetter(keyLetter);
-        let scoreboardHearts = scoreboard.firstElementChild;
-
-        if (checkFunc === '') {
+        let checkLetterFunc = checkLetter(keyLetter);
+        if (checkLetterFunc === '') {
             missed++;
-            scoreboardHearts.remove();
+            scoreboard.firstElementChild.remove();
             let lostHeart = document.createElement('li')
             let lostHeartImg = `<img src="images/lostHeart.png" height="35px" width="30px">`;
             lostHeart.className = 'tries';
