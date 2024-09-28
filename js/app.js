@@ -1,7 +1,8 @@
 const startOverlay = document.getElementById('overlay');
 const phraseUl = document.querySelector('#phrase ul');
 const qwerty = document.getElementById('qwerty');
-const scoreboard = document.querySelector('#scoreboard ol');
+const keyrow = document.querySelectorAll('.keyrow button');
+const scoreboard = document.querySelectorAll('.tries img');
 
 const startBtn = document.querySelector('.btn__reset');
 
@@ -23,6 +24,7 @@ function getRandomPhraseAsArray() {
 
 // Return a random phrase and add to HTML.
 function addPhraseToDisplay() {
+    phraseUl.replaceChildren('');
     let getPhrase = getRandomPhraseAsArray();
     let splitPhrase = getPhrase.split('');
     for (let i = 0; i < splitPhrase.length; i++) {
@@ -60,12 +62,12 @@ function checkWin() {
     let show = document.querySelectorAll('li.show');
     let startOverlayTitle = document.querySelector('.title');
     if (letter.length === show.length) {
-        startOverlay.classList.add('win');
+        startOverlay.className = 'win';
         startOverlayTitle.textContent = 'You Win!';
         startBtn.textContent = 'Restart Game';
         startOverlay.style.display = 'flex';
     } else if (missed > 4) {
-        startOverlay.classList.add('lose');
+        startOverlay.className = 'lose';
         startOverlayTitle.textContent = 'You Lost!';
         startBtn.textContent = 'Restart Game';
         startOverlay.style.display = 'flex';
@@ -77,7 +79,9 @@ startBtn.addEventListener('click', () => {
     startOverlay.style.display = 'none';
     let startOverlayClass = startOverlay.className;
     if (startOverlayClass.includes('win') || startOverlayClass.includes('lose')) {
-        location.reload();
+        missed = 0;
+        keyrow.forEach((button) => {button.className = ''});
+        scoreboard.forEach((img) => {img.src = 'images/liveHeart.png'});
     }
     addPhraseToDisplay();
 });
@@ -91,12 +95,7 @@ qwerty.addEventListener('click', (e) => {
         let checkLetterFunc = checkLetter(keyLetter);
         if (checkLetterFunc === '') {
             missed++;
-            scoreboard.firstElementChild.remove();
-            let lostHeart = document.createElement('li')
-            let lostHeartImg = `<img src="images/lostHeart.png" height="35px" width="30px">`;
-            lostHeart.className = 'tries';
-            lostHeart.innerHTML = lostHeartImg;
-            scoreboard.appendChild(lostHeart);
+            scoreboard[scoreboard.length - missed].src = 'images/lostHeart.png';
         }
     }
     checkWin();
